@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>DAKSERVICE Repair History</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white text-gray-800">
+
+<header class="flex items-center justify-between border-b px-10 py-3 bg-white shadow-sm">
+  <h1 class="text-lg font-bold">DAKSERVICE LTD.</h1>
+  <div class="flex items-center gap-6">
+    <a href="admin.html" class="text-blue-600 hover:text-blue-800 text-sm font-medium">Admin Panel</a>
+  </div>
+</header>
+
+<main class="p-6 max-w-4xl mx-auto">
+  <h2 class="text-2xl font-bold mb-2">Vessel Repair History</h2>
+  <p class="mb-4 text-gray-600">Manage and track all vessel repair activities</p>
+
+  <div class="overflow-x-auto">
+    <table class="min-w-full table-auto rounded-lg overflow-hidden shadow-sm">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Ship Name</th>
+          <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Type</th>
+          <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Last Repair Date</th>
+          <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
+          <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="vesselsTable">
+        <!-- Данные будут загружены динамически -->
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<script>
+  async function loadVessels() {
+    const res = await fetch("/api/vessels");
+    const vessels = await res.json();
+    const tbody = document.getElementById("vesselsTable");
+    tbody.innerHTML = "";
+
+    vessels.forEach(v => {
+      tbody.innerHTML += `
+        <tr class="border-t border-gray-200 hover:bg-gray-50">
+          <td class="px-4 py-2">${v.name}</td>
+          <td class="px-4 py-2 text-gray-600">${v.type}</td>
+          <td class="px-4 py-2 text-gray-600">${v.last_repair_date}</td>
+          <td class="px-4 py-2">
+            <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold 
+              ${v.status === 'Completed' ? 'bg-green-100 text-green-800' : 
+                v.status === 'Under Inspection' ? 'bg-yellow-100 text-yellow-800' : 
+                'bg-blue-100 text-blue-800'}">
+              ${v.status}
+            </span>
+          </td>
+          <td class="px-4 py-2 text-blue-600 font-bold cursor-pointer">
+            <a href="details.html?name=${encodeURIComponent(v.name)}">View Details</a>
+          </td>
+        </tr>`;
+    });
+  }
+
+  window.onload = loadVessels;
+</script>
+
+</body>
+</html>

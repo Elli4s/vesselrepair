@@ -1,0 +1,13 @@
+DAKSERVICE_PROJECT/
+│
+├── public/
+│   ├── index.html       ← Главная страница
+│   ├── details.html     ← Детали по судну
+│   └── admin.html       ← Админка
+│
+├── db/
+│   └── vessels.db       ← SQLite база данных
+│
+├── server.js             ← Node.js сервер
+├── package.json          ← Зависимости
+└── README.md             ← Описание проекта

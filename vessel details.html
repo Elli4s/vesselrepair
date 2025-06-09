@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Vessel Details</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white text-gray-800">
+
+<header class="flex items-center justify-between border-b px-10 py-3 bg-white shadow-sm">
+  <h1 class="text-lg font-bold">DAKSERVICE LTD.</h1>
+  <button onclick="window.history.back()" class="text-blue-600 hover:text-blue-800">← Back to List</button>
+</header>
+
+<main class="p-6 max-w-4xl mx-auto">
+  <h2 id="vesselName" class="text-2xl font-bold mb-2">Loading...</h2>
+  <p class="mb-6 text-gray-600">History for this vessel will be shown here</p>
+
+  <h3 class="text-xl font-bold mb-4">Inspection Reports</h3>
+  <ul id="repairList" class="space-y-2 mb-6"></ul>
+
+  <h3 class="text-xl font-bold mb-4">Inspection Photos</h3>
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+    <div class="aspect-square bg-gray-200 rounded-lg bg-cover bg-center" style="background-image: url('https://via.placeholder.com/150');"></div>
+  </div>
+</main>
+
+<script>
+  const vesselName = new URLSearchParams(window.location.search).get("name");
+
+  if (!vesselName) {
+    document.getElementById("vesselName").textContent = "No vessel selected";
+  } else {
+    document.getElementById("vesselName").textContent = vesselName;
+
+    // Получаем ремонтные истории
+    fetch(`/api/vessels/${vesselName}/repairs`)
+      .then(res => res.json())
+      .then(repairs => {
+        const list = document.getElementById("repairList");
+        list.innerHTML = "";
+        repairs.forEach(r => {
+          list.innerHTML += `<li class="p-3 border border-gray-200 rounded">${r.date} — ${r.description}</li>`;
+        });
+      });
+  }
+</script>
+
+</body>
+</html>

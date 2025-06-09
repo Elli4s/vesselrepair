@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Panel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+<header class="flex items-center justify-between border-b px-10 py-3 bg-white shadow-sm">
+  <h1 class="text-xl font-bold">DAKSERVICE Admin</h1>
+  <button onclick="window.location.href='index.html'" class="text-blue-600 hover:text-blue-800">← Back</button>
+</header>
+
+<main class="p-6 max-w-4xl mx-auto">
+  <section class="mb-8 bg-white p-6 rounded-lg shadow-md">
+    <h2 class="text-xl font-bold mb-4">Добавить новое судно</h2>
+    <form id="addVesselForm" class="space-y-4">
+      <input type="text" id="name" placeholder="Название судна" required class="w-full border border-gray-300 rounded p-2">
+      <input type="text" id="type" placeholder="Тип судна" required class="w-full border border-gray-300 rounded p-2">
+      <input type="date" id="lastRepairDate" required class="w-full border border-gray-300 rounded p-2">
+      <select id="status" required class="w-full border border-gray-300 rounded p-2">
+        <option value="">Выберите статус</option>
+        <option value="Completed">Завершён</option>
+        <option value="Under Inspection">На осмотре</option>
+        <option value="In Progress">В работе</option>
+      </select>
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Добавить судно</button>
+    </form>
+  </section>
+
+  <section class="mb-8 bg-white p-6 rounded-lg shadow-md">
+    <h2 class="text-xl font-bold mb-4">Добавить ремонт</h2>
+    <form id="addRepairForm" class="space-y-4">
+      <input type="text" id="vesselName" placeholder="Название судна" required class="w-full border border-gray-300 rounded p-2">
+      <input type="date" id="repairDate" required class="w-full border border-gray-300 rounded p-2">
+      <textarea id="description" rows="3" placeholder="Описание ремонта" required class="w-full border border-gray-300 rounded p-2"></textarea>
+      <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">Добавить ремонт</button>
+    </form>
+  </section>
+
+  <div id="statusMessage" class="mt-4 text-sm text-gray-700"></div>
+</main>
+
+<script>
+  const addVesselForm = document.getElementById("addVesselForm");
+  const addRepairForm = document.getElementById("addRepairForm");
+  const statusMessage = document.getElementById("statusMessage");
+
+  addVesselForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const name = document.getElementById("name").value;
+    const type = document.getElementById("type").value;
+    const lastRepairDate = document.getElementById("lastRepairDate").value;
+    const status = document.getElementById("status").value;
+
+    const response = await fetch("/api/vessels", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, type, last_repair_date: lastRepairDate, status })
+    });
+
+    const result = await response.json();
+    showMessage("Судно успешно добавлено!", "success");
+    addVesselForm.reset();
+  });
+
+  addRepairForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const vesselName = document.getElementById("vesselName").value;
+    const date = document.getElementById("repairDate").value;
+    const description = document.getElementById("description").value;
+
+    const response = await fetch(`/api/vessels/${vesselName}/repairs`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ date, description })
+    });
+
+    const result = await response.json();
+    showMessage(`Ремонт для "${vesselName}" добавлен!`, "success");
+    addRepairForm.reset();
+  });
+
+  function showMessage(text, type = "error") {
+    statusMessage.textContent = text;
+    statusMessage.className = `mt-4 text-sm ${type === "success" ? "text-green-600" : "text-red-600"}`;
+  }
+</script>
+
+</body>
+</html>
